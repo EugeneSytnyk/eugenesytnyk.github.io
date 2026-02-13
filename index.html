@@ -10,17 +10,22 @@
     body {
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #1a0a1e, #2d1b36, #1a0a1e);
+      background: linear-gradient(135deg, #fff0f5, #ffe0ec, #ffd6e7, #fff0f5);
+      background-size: 400% 400%;
+      animation: bgShift 8s ease infinite;
       font-family: 'Georgia', serif;
-      color: #fff;
       overflow: hidden;
       position: relative;
     }
 
-    /* Floating hearts background */
+    @keyframes bgShift {
+      0%, 100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
+
+    /* Floating hearts */
     .hearts-bg {
       position: fixed;
       top: 0; left: 0;
@@ -39,154 +44,140 @@
 
     @keyframes floatUp {
       0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 0; }
-      10%  { opacity: 0.7; }
-      90%  { opacity: 0.7; }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.6; }
       100% { transform: translateY(-110vh) rotate(360deg) scale(0.5); opacity: 0; }
     }
 
-    /* Main content */
-    .content {
+    /* Heart wrapper */
+    .heart-wrapper {
       position: relative;
       z-index: 1;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    /* Beating heart */
-    .heart-container {
-      font-size: 80px;
-      animation: beat 1s ease-in-out infinite;
-      margin-bottom: 1.5rem;
-      filter: drop-shadow(0 0 20px rgba(255, 80, 120, 0.6));
       cursor: pointer;
-      transition: font-size 0.3s;
+      width: 300px;
+      height: 280px;
     }
 
-    @keyframes beat {
+    /* CSS Heart shape using two halves */
+    .heart {
+      position: relative;
+      width: 300px;
+      height: 280px;
+      filter: drop-shadow(0 8px 30px rgba(220, 40, 80, 0.35));
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
       0%, 100% { transform: scale(1); }
-      15%      { transform: scale(1.15); }
-      30%      { transform: scale(1); }
-      45%      { transform: scale(1.1); }
+      50%      { transform: scale(1.04); }
     }
 
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      background: linear-gradient(90deg, #ff6b9d, #ffa8c5, #ff6b9d);
-      background-size: 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: shimmer 3s ease-in-out infinite;
+    .heart-half {
+      position: absolute;
+      top: 0;
+      width: 150px;
+      height: 280px;
+      overflow: hidden;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-origin: center center;
     }
 
-    @keyframes shimmer {
-      0%, 100% { background-position: 0% 50%; }
-      50%      { background-position: 100% 50%; }
+    .heart-half-left {
+      left: 0;
+      transform-origin: right center;
     }
 
-    .message {
-      font-size: 1.3rem;
-      line-height: 1.8;
-      max-width: 500px;
-      color: #f0c0d0;
-      margin-bottom: 2rem;
-      opacity: 0;
-      animation: fadeInUp 1s ease forwards 0.5s;
+    .heart-half-right {
+      right: 0;
+      transform-origin: left center;
     }
 
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
+    /* SVG heart halves */
+    .heart-half svg {
+      width: 300px;
+      height: 280px;
+      display: block;
     }
 
-    /* Surprise button */
-    .surprise-btn {
-      background: linear-gradient(135deg, #ff6b9d, #c44569);
-      border: none;
-      color: white;
-      padding: 15px 40px;
-      font-size: 1.1rem;
-      font-family: 'Georgia', serif;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
-      opacity: 0;
-      animation: fadeInUp 1s ease forwards 1s;
+    .heart-half-left svg {
+      position: absolute;
+      right: 0;
     }
 
-    .surprise-btn:hover {
-      transform: scale(1.08);
-      box-shadow: 0 6px 30px rgba(255, 107, 157, 0.6);
+    .heart-half-right svg {
+      position: absolute;
+      left: 0;
     }
 
-    /* Surprise overlay */
-    .surprise-overlay {
-      position: fixed;
+    /* Opened state */
+    .heart-wrapper.opened .heart-half-left {
+      transform: rotateY(-160deg);
+    }
+
+    .heart-wrapper.opened .heart-half-right {
+      transform: rotateY(160deg);
+    }
+
+    .heart-wrapper.opened .heart {
+      animation: none;
+    }
+
+    /* Inner content (revealed on open) */
+    .heart-inner {
+      position: absolute;
       top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(26, 10, 30, 0.95);
+      width: 100%;
+      height: 100%;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 100;
       opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.6s ease;
+      transition: opacity 0.6s ease 0.3s;
+      z-index: -1;
     }
 
-    .surprise-overlay.active {
+    .heart-wrapper.opened .heart-inner {
       opacity: 1;
-      pointer-events: all;
     }
 
-    .surprise-content {
-      text-align: center;
-      transform: scale(0.8);
-      transition: transform 0.6s ease;
+    .heart-inner img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #ff6b9d;
+      box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
+      margin-bottom: 12px;
     }
 
-    .surprise-overlay.active .surprise-content {
-      transform: scale(1);
+    .heart-inner .love-text {
+      font-size: 1.6rem;
+      color: #d6336c;
+      font-weight: bold;
+      text-shadow: 0 1px 4px rgba(214, 51, 108, 0.2);
     }
 
-    .surprise-emoji {
-      font-size: 100px;
-      display: block;
-      margin-bottom: 1rem;
-      animation: beat 1s ease-in-out infinite;
+    /* Tap hint */
+    .tap-hint {
+      position: absolute;
+      bottom: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.95rem;
+      color: #c77d95;
+      opacity: 0.8;
+      animation: fadeHint 2s ease-in-out infinite;
+      white-space: nowrap;
     }
 
-    .surprise-text {
-      font-size: 2rem;
-      color: #ffa8c5;
-      margin-bottom: 1rem;
+    .heart-wrapper.opened .tap-hint {
+      display: none;
     }
 
-    .surprise-sub {
-      font-size: 1.2rem;
-      color: #d4a0b0;
-      max-width: 400px;
-      line-height: 1.6;
-    }
-
-    .close-btn {
-      margin-top: 2rem;
-      background: transparent;
-      border: 2px solid #ff6b9d;
-      color: #ff6b9d;
-      padding: 10px 30px;
-      font-size: 1rem;
-      font-family: 'Georgia', serif;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .close-btn:hover {
-      background: #ff6b9d;
-      color: #fff;
+    @keyframes fadeHint {
+      0%, 100% { opacity: 0.4; }
+      50%      { opacity: 1; }
     }
 
     /* Sparkle burst on click */
@@ -203,10 +194,26 @@
       100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
     }
 
-    @media (max-width: 600px) {
-      h1 { font-size: 1.8rem; }
-      .message { font-size: 1.1rem; }
-      .heart-container { font-size: 60px; }
+    @media (max-width: 500px) {
+      .heart-wrapper, .heart {
+        width: 220px;
+        height: 205px;
+      }
+      .heart-half {
+        width: 110px;
+        height: 205px;
+      }
+      .heart-half svg {
+        width: 220px;
+        height: 205px;
+      }
+      .heart-inner img {
+        width: 85px;
+        height: 85px;
+      }
+      .heart-inner .love-text {
+        font-size: 1.2rem;
+      }
     }
   </style>
 </head>
@@ -214,30 +221,47 @@
 
   <div class="hearts-bg" id="heartsBg"></div>
 
-  <div class="content">
-    <div class="heart-container" id="mainHeart">&#10084;&#65039;</div>
-    <h1>Happy Valentine's Day!</h1>
-    <p class="message">
-      Every moment with you is a gift I never want to stop unwrapping.
-      You make the ordinary feel extraordinary.
-    </p>
-    <button class="surprise-btn" onclick="showSurprise()">A Little Surprise</button>
-  </div>
-
-  <div class="surprise-overlay" id="surpriseOverlay">
-    <div class="surprise-content">
-      <span class="surprise-emoji">&#128144;</span>
-      <p class="surprise-text">You are my forever Valentine</p>
-      <p class="surprise-sub">
-        No algorithm could ever calculate how much you mean to me.
-        Here's to us &mdash; today, tomorrow, and always.
-      </p>
-      <button class="close-btn" onclick="hideSurprise()">&#10084;&#65039;</button>
+  <div class="heart-wrapper" id="heartWrapper" onclick="toggleHeart()">
+    <div class="heart">
+      <!-- Left half -->
+      <div class="heart-half heart-half-left">
+        <svg viewBox="0 0 300 280" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#ff6b9d"/>
+              <stop offset="100%" style="stop-color:#e8365d"/>
+            </linearGradient>
+          </defs>
+          <path d="M150 250 C150 250 10 170 10 80 C10 30 50 0 95 0 C125 0 145 20 150 40 L150 250Z"
+                fill="url(#heartGrad)"/>
+        </svg>
+      </div>
+      <!-- Right half -->
+      <div class="heart-half heart-half-right">
+        <svg viewBox="0 0 300 280" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="heartGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#ff6b9d"/>
+              <stop offset="100%" style="stop-color:#e8365d"/>
+            </linearGradient>
+          </defs>
+          <path d="M150 250 C150 250 290 170 290 80 C290 30 250 0 205 0 C175 0 155 20 150 40 L150 250Z"
+                fill="url(#heartGrad2)"/>
+        </svg>
+      </div>
     </div>
+
+    <!-- Hidden content inside -->
+    <div class="heart-inner">
+      <img src="photo.png" alt="Us">
+      <span class="love-text">&#1051;&#1102;&#1073;&#1083;&#1102; &#1090;&#1077;&#1073;&#1103;</span>
+    </div>
+
+    <div class="tap-hint">tap the heart</div>
   </div>
 
   <script>
-    // Floating hearts background
+    // Floating hearts
     const heartsBg = document.getElementById('heartsBg');
     const heartEmojis = ['\u2764\uFE0F', '\uD83D\uDC95', '\uD83D\uDC96', '\uD83D\uDC97', '\uD83D\uDC93', '\uD83E\uDE77', '\uD83D\uDC90'];
 
@@ -256,14 +280,17 @@
     setInterval(spawnHeart, 400);
     for (let i = 0; i < 10; i++) setTimeout(spawnHeart, i * 200);
 
-    // Surprise overlay
-    function showSurprise() {
-      document.getElementById('surpriseOverlay').classList.add('active');
-      burstHearts();
-    }
-
-    function hideSurprise() {
-      document.getElementById('surpriseOverlay').classList.remove('active');
+    // Toggle heart open/close
+    let isOpen = false;
+    function toggleHeart() {
+      const wrapper = document.getElementById('heartWrapper');
+      isOpen = !isOpen;
+      if (isOpen) {
+        wrapper.classList.add('opened');
+        burstHearts();
+      } else {
+        wrapper.classList.remove('opened');
+      }
     }
 
     // Click sparkle effect
@@ -284,7 +311,6 @@
       }
     });
 
-    // Heart burst on surprise
     function burstHearts() {
       for (let i = 0; i < 30; i++) {
         setTimeout(spawnHeart, i * 50);
