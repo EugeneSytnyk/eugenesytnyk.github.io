@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Happy Valentine's Day!</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; }
 
     body {
       min-height: 100vh;
@@ -123,6 +123,8 @@
     .heart-inner img {
       width: 140px;
       height: 140px;
+      -webkit-user-drag: none;
+      pointer-events: none;
       border-radius: 50%;
       object-fit: cover;
       border: 5px solid #ff6b9d;
@@ -167,6 +169,22 @@
     @keyframes sparkleAnim {
       0%   { opacity: 1; transform: translate(0, 0) scale(1); }
       100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+    }
+
+    @media (min-width: 768px) {
+      .heart-area { width: 420px; height: 378px; }
+      .heart-inner img { width: 190px; height: 190px; }
+      .love-text { font-size: 2.2rem; }
+      .heart-area.opened .half-left { transform: translateX(-160px) rotate(-15deg); }
+      .heart-area.opened .half-right { transform: translateX(160px) rotate(15deg); }
+    }
+
+    @media (min-width: 1200px) {
+      .heart-area { width: 500px; height: 450px; }
+      .heart-inner img { width: 220px; height: 220px; }
+      .love-text { font-size: 2.6rem; }
+      .heart-area.opened .half-left { transform: translateX(-200px) rotate(-15deg); }
+      .heart-area.opened .half-right { transform: translateX(200px) rotate(15deg); }
     }
 
     @media (max-width: 500px) {
