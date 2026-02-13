@@ -246,7 +246,7 @@
   <div class="hearts-bg" id="heartsBg"></div>
 
   <div class="scene">
-    <div class="heart-area" id="heartArea" onclick="toggleHeart()">
+    <div class="heart-area" id="heartArea">
       <svg class="heart-svg" viewBox="0 0 200 185" xmlns="http://www.w3.org/2000/svg">
         <!-- Left lobe -->
         <path class="half-left"
@@ -263,7 +263,7 @@
         <span class="love-text">А Я ЛЮБЛЮ ТЕБЯ!</span>
         <span class="love-subtext">Будешь моей Валентинкой?</span>
         <div class="buttons">
-          <button class="btn-yes" onclick="sayYes(event)">Да!</button>
+          <button class="btn-yes" id="btnYes">Да!</button>
           <button class="btn-no" id="btnNo">Нет</button>
         </div>
       </div>
@@ -293,21 +293,24 @@
     setInterval(spawnHeart, 400);
     for (let i = 0; i < 10; i++) setTimeout(spawnHeart, i * 200);
 
-    // Toggle heart
+    // Toggle heart — only when clicking the SVG or heart area directly
+    const heartArea = document.getElementById('heartArea');
     let isOpen = false;
-    function toggleHeart() {
-      const area = document.getElementById('heartArea');
-      const hint = document.getElementById('tapHint');
+
+    heartArea.addEventListener('click', function(e) {
+      // Don't toggle if clicking buttons
+      if (e.target.closest('.btn-yes') || e.target.closest('.btn-no')) return;
       isOpen = !isOpen;
+      const hint = document.getElementById('tapHint');
       if (isOpen) {
-        area.classList.add('opened');
+        heartArea.classList.add('opened');
         hint.classList.add('hidden');
         burstHearts();
       } else {
-        area.classList.remove('opened');
+        heartArea.classList.remove('opened');
         hint.classList.remove('hidden');
       }
-    }
+    });
 
     // Click sparkle
     document.addEventListener('click', function(e) {
@@ -333,13 +336,19 @@
       }
     }
 
-    // "Нет" button runs away
+    // "Нет" button runs away — move to body so it stays visible
     const btnNo = document.getElementById('btnNo');
+    let noMoved = false;
+
     btnNo.addEventListener('mouseenter', runAway);
     btnNo.addEventListener('touchstart', function(e) { e.preventDefault(); runAway(); }, { passive: false });
 
     function runAway() {
-      const pad = 20;
+      if (!noMoved) {
+        document.body.appendChild(btnNo);
+        noMoved = true;
+      }
+      const pad = 30;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const bw = btnNo.offsetWidth || 80;
@@ -353,12 +362,14 @@
     }
 
     // "Да!" celebration
-    function sayYes(e) {
+    document.getElementById('btnYes').addEventListener('click', function(e) {
       e.stopPropagation();
-      for (let i = 0; i < 60; i++) {
-        setTimeout(spawnHeart, i * 40);
+      // Hide "Нет" button if it's floating around
+      btnNo.style.display = 'none';
+      for (let i = 0; i < 80; i++) {
+        setTimeout(spawnHeart, i * 35);
       }
-    }
+    });
   </script>
 
 </body>
